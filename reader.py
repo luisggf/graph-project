@@ -4,11 +4,11 @@ class Reader:
     def __init__(self) -> None:
         pass
 
-    def file_treatment(self, filename):
+    def file_treatment(self, filename, output_filename):
         columns = ["idVotacao", "voto", "deputado_id", "deputado_nome"]
         df = pd.read_csv(filename, sep=";")
         df = df[columns]
-        df.to_csv("votacoesVotos-2023-clean.csv", index=False)
+        df.to_csv(output_filename, index=False)
         print("Clean file: 'votacoesVotos-2023-clean.csv' created")
 
     def defrag_idVotes(self, filename):
@@ -46,33 +46,7 @@ class Reader:
         combined_df = pd.concat(partitions, ignore_index=True)  # Combina os DataFrames da lista
         return combined_df
     
-    # def set_relationship_partitioned(self, partition):
-    #     graph = Weighted_Graph()
-    #     compliance_list = []
-    #     added_edges = set()  # Set to store the added edges
-
-    #     for _, row in partition.iterrows():
-    #         dp_names = row['deputado_nome']
-    #         graph.add_node(dp_names)
-
-    #         if row['voto'] == "Sim":
-    #             compliance_list.append(dp_names)
-
-    #     for i in range(len(compliance_list)):
-    #         for j in range(i + 1, len(compliance_list)):
-    #             name1 = compliance_list[i]
-    #             name2 = compliance_list[j]
-    #             if (name1, name2) not in added_edges and (name2, name1) not in added_edges and name1 != name2:
-    #                 if not graph.there_is_edge(name1, name2) or not graph.there_is_edge(name2, name1):
-    #                     graph.add_two_way_edge(name1, name2, 1)
-    #                 if graph.there_is_edge(name1, name2):
-    #                     graph.adj_list[name1][name2] += 1
-    #                 if graph.there_is_edge(name2, name1):
-    #                     graph.adj_list[name2][name1] += 1
-    #                 added_edges.add((name1, name2))
-    #                 added_edges.add((name2, name1))
-
-    #     return graph
+    
 
     def set_relationship_partitioned(self, list_df):
         graph = Weighted_Graph()

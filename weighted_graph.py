@@ -14,15 +14,9 @@ class Weighted_Graph:
     def add_edge(self, node1, node2, weight):
         if node1 not in self.adj_list:
             self.add_node(node1)
-        
         if node2 not in self.adj_list:
             self.add_node(node2)
-        
-        if node2 in self.adj_list[node1]:
-            self.adj_list[node1][node2] += weight
-        else:
-            self.adj_list[node1][node2] = weight
-
+        self.adj_list[node1][node2] = weight
         self.edge_count += 1
 
     def add_two_way_edge(self, node1, node2, weight):
