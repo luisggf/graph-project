@@ -151,28 +151,21 @@ class Weighted_Graph:
                 if self.there_is_edge(deputado_nome, outro_deputado_nome) and outro['tipoVoto'] == voto:
                     self.adj_list[deputado_nome][outro_deputado_nome] += 1
                     self.adj_list[outro_deputado_nome][deputado_nome] += 1
-        return self
+        return self, dados_final
     
+          
     # realiza leitura do grafo e então cria o arquivo no formato dp1_nome, votacoes_participadas
-    def write_dpts_lenVotes(graph, input_filename,output_filename):
+    def write_dpts_numVotes(graph, df, output_filename):
         with open(output_filename, 'w', encoding='utf-8') as file:
             file.write(f"Numero de participantes:  {graph.node_count}\n")
             vote_cont = 0
-            cont = 0
             for node in graph.adj_list:
-                file2 = open(input_filename, 'r', encoding='utf-8') 
-                for line in file2:
-                    if cont != 0:
-                        # print(line)
-                        content = line.strip().replace('"', '').split(";")
-                        deputado_nome1 = content[6]
-                        if deputado_nome1 == node:
-                            vote_cont += 1
-                    else:
-                        cont += 1
+                for _, votacao in df.iterrows():
+                    deputado_nome = votacao['deputado_']['nome']
+                    if node == deputado_nome:
+                        vote_cont += 1
                 file.write(f"{node.replace(' ', '_')} {vote_cont}\n")
                 vote_cont = 0
-        file2.close()
 
     # realiza leitura do grafo e então cria o arquivo no formato dp1_nome dp2_nome peso_entre_dpts
     def write_graph(graph, output_filename):
