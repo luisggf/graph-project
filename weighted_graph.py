@@ -111,7 +111,7 @@ class Weighted_Graph:
     # dados são coletados e usados para montar relações e pesos, por fim retorna o grafo
     def data_api_requests(self):
         print("Processando...")
-        response = requests.get("https://dadosabertos.camara.leg.br/api/v2/votacoes?dataInicio=2022-01-01")
+        response = requests.get("https://dadosabertos.camara.leg.br/api/v2/votacoes?dataInicio=2023-01-01")
         data = json.loads(response.text)
         dados = []
 
@@ -131,18 +131,18 @@ class Weighted_Graph:
             except:
                 print("Conteúdo indisponível")
 
-        dados_final = pd.DataFrame(dados)
+        # dados_final = pd.DataFrame(dados)
 
-        for _, votacao in dados_final.iterrows():
+        for votacao in dados:
             voto = votacao['tipoVoto']
             id_votacao = votacao['id_votacao']
             deputado_nome = votacao['deputado_']['nome']
 
             self.add_node(deputado_nome)
 
-            outros_deputados = dados_final[((dados_final['id_votacao'] == id_votacao) & dados_final['deputado_'].apply(lambda x: x['nome'] != deputado_nome))]
+            outros_deputados = [outro for outro in dados if outro['id_votacao'] == id_votacao and outro['deputado_']['nome'] != deputado_nome]
 
-            for _, outro in outros_deputados.iterrows():
+            for outro in outros_deputados:
                 outro_deputado_nome = outro['deputado_']['nome']
 
                 if outro['tipoVoto'] == voto and not self.there_is_edge(deputado_nome, outro_deputado_nome):
@@ -151,8 +151,8 @@ class Weighted_Graph:
                 if self.there_is_edge(deputado_nome, outro_deputado_nome) and outro['tipoVoto'] == voto:
                     self.adj_list[deputado_nome][outro_deputado_nome] += 1
                     self.adj_list[outro_deputado_nome][deputado_nome] += 1
-        return self, dados_final
-    
+        return self, dados
+
           
     # realiza leitura do grafo e então cria o arquivo no formato dp1_nome, votacoes_participadas
     def write_dpts_numVotes(graph, df, output_filename):
@@ -160,7 +160,7 @@ class Weighted_Graph:
             file.write(f"Numero de participantes:  {graph.node_count}\n")
             vote_cont = 0
             for node in graph.adj_list:
-                for _, votacao in df.iterrows():
+                for votacao in df:
                     deputado_nome = votacao['deputado_']['nome']
                     if node == deputado_nome:
                         vote_cont += 1
